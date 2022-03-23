@@ -1,4 +1,6 @@
 "use strict";
+// try without jshint and with
+/* jshint esversion: 8 */
 
 window.addEventListener('DOMContentLoaded', ()  => { 
 
@@ -221,12 +223,22 @@ window.addEventListener('DOMContentLoaded', ()  => {
     };
 
     forms.forEach(item => {
-        postData(item);
+        bindPostData(item);
     });
-    function postData(form){
+    const postData = async (url, data) => { // асинхронная функция отсылающая запрос на сервер
+        let res = await fetch(url, { // aweit  ждет пока не прийдет ответ
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data
+        });
+        return await res.json();
+    }; 
+
+    function bindPostData(form){
         form.addEventListener('submit',(e) => { // событие срабатывающее при вводе в инпут и нажатии на ентер
             e.preventDefault();//удаляем стандартное поведение браузера
-
             const statusMessange = document.createElement('img'); //создаем поле дя ответа
             statusMessange.src= messange.loading;
             statusMessange.style.cssText=`
@@ -237,19 +249,14 @@ window.addEventListener('DOMContentLoaded', ()  => {
             
             const formData = new FormData(form); // новый обьект который передает на сервар то , что уходит с инпута
             
-            const object = {};// JSON только.  создаем обьект и превращаем  FormData  в обычный обьект
-            formData.forEach(function(value, key) {
-                object[key] = value;
-            }); 
+            // const object = {};// JSON только.  создаем обьект и превращаем  FormData  в обычный обьект
+            // formData.forEach(function(value, key) {
+            //     object[key] = value;
+            // }); 
 
-            fetch('server.php',{
-                method:"POST",
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(data => data.text()) // переводим ответ в текст
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+            postData('http://localhost:3000/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(messange.success);
@@ -285,10 +292,10 @@ window.addEventListener('DOMContentLoaded', ()  => {
         }, 4000);
     }
     
-    fetch('db.json')
-        .then(data => data.json())
-        .then(res => console.log(res));
-
+    // fetch('http://localhost:3000/menu')
+    //     .then(data => data.json())
+    //     .then(res => console.log(res));
+    
         
     
 });

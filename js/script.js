@@ -185,31 +185,23 @@ window.addEventListener('DOMContentLoaded', ()  => {
 
     }
 
-    new MenuCard("img/tabs/vegy.jpg",
-                     "vegy",
-                      "Меню 'Фитнес'",
-                      "Меню 'Фитнес' - это новый подход к приготовлению блюд: больше свежиховощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальнойценой и высоким качеством!",
-                       229,
-                       ".menu .container"
-                       ).render();
-    new MenuCard("img/tabs/elite.jpg",
-                       "elite",
-                       'Меню “Премиум”',
-                        'и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без походав ресторан!',
-                        550,
-                        ".menu .container",
-                        "menu__item"
-                        ).render();
-                     
-    new MenuCard("img/tabs/post.jpg",
-                        "epost",
-                        'Меню “Постное”',
-                        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-                        430,
-                        ".menu .container",
-                        "menu__item",
-                        "big"
-                        ).render();
+    const getResourse = async (url) => { // асинхронная функция отсылающая запрос на сервер
+        let res = await fetch(url);  // aweit  ждет пока не прийдет ответ
+        
+        if(!res.ok){// если в запросе , что то не так
+            throw new Error(`Could not fetch ${url}, status:${res.status}`);
+        }
+
+        return await res.json();
+    }; 
+
+    getResourse('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => { // вытягиваем свойства обьекта(диструктуризирую обьект по отдельным частям)
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
+        });    
+   
 
 
  // ============================================FORMS=======================================================

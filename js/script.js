@@ -289,10 +289,48 @@ window.addEventListener('DOMContentLoaded', ()  => {
         }, 4000);
     }
     
-    // fetch('http://localhost:3000/menu')
-    //     .then(data => data.json())
-    //     .then(res => console.log(res));
+    //==================================SLIDE ===========================
+    const slides =document.querySelectorAll('.offer__slide'), 
+          prev = document.querySelector('.offer__slider-prev'),
+          next = document.querySelector('.offer__slider-next'),
+          total = document.querySelector('#total'),
+          current = document.querySelector('#current');
+    let slideIndex = 1;
+
+    showSlides(slideIndex); // 5. ствим предел по фото (1/4)
+    if (slides.length < 10){
+        total.textContent = `0${slides.length}`;
+    }else{
+        total.textContact = slides.length;
+    }
     
-    
+    function showSlides(n){ // 1. проверяем клики на предел фото
+        if (n > slides.length){
+            slideIndex = 1;
+        }
+        if (n < 1){
+            slideIndex = slides.length;
+        }
+        
+        slides.forEach(item => item.style.display = "none");// 2. скрываем все фото
+        slides[slideIndex - 1].style.display = "block"; //3. открываем нужное фото
+        
+        if(slides.length < 10){ // 6. ставим 1ю цивру с 1/4
+            current.textContent = `0${slideIndex}`;
+        }else{
+            current.textContent = slideIndex;
+        }
+    }
+
+    function plusSlides(n){ // 4. отправляю значение при нажати на кнопки
+        showSlides(slideIndex += n)
+    }
+
+    prev.addEventListener('click', () => {
+        plusSlides(-1);
+    });
+    next.addEventListener('click', () => {
+        plusSlides(1);
+    });
     
 });

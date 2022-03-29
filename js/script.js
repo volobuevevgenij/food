@@ -290,7 +290,8 @@ window.addEventListener('DOMContentLoaded', ()  => {
     }
     
     //==================================SLIDE ===========================
-    const slides =document.querySelectorAll('.offer__slide'), 
+    const slides = document.querySelectorAll('.offer__slide'),
+          slider = document.querySelector('.offer__slider'),
           prev = document.querySelector('.offer__slider-prev'),
           next = document.querySelector('.offer__slider-next'),
           total = document.querySelector('#total'),
@@ -301,7 +302,7 @@ window.addEventListener('DOMContentLoaded', ()  => {
     let slideIndex = 1;
     let offset = 0;
 
-    if(slides.length < 10){
+    if(slides.length < 10){// устанавливаем цифры над слайдом
         total.textContent = `0${slides.length}`;
         current.textContent = `0${slideIndex}`;
     }else{
@@ -313,31 +314,47 @@ window.addEventListener('DOMContentLoaded', ()  => {
     slidesField.style.display = 'flex'; // 3. устанавливаем  горизонтально слайды
     slidesField.style.transition = '0.5s all';
 
-    slidesWrapper.style.overflow = 'hidden';
+    slidesWrapper.style.overflow = 'hidden';// скрываем часть которая не должна быть видна в слайде
 
     slides.forEach(slide => {
         slide.style.width = width; // 2 устанавливаем одинаковую ширину для каждого сайда
     });
 
+    slider.style.position = 'relative';
+
+    const indicators = document.createElement('ol'),
+          dots = [];
+    indicators.classList.add('carousel-indicators');
+    slider.append(indicators);
+
+    for(let i = 0; i < slides.length; i++){
+        const dot = document.createElement('li');
+        dot.setAttribute('data-slide-to', i +1); // устанавливаем атрибут каждому слайду начиная с 1 
+        dot.classList.add('dot');
+
+        if(i == 0){
+            dot.style.opacity = 1;//  создаем стиль индикатору
+        }
+        indicators.append(dot);
+        dots.push(dot);
+    }
+
     next .addEventListener('click', () => {
-        if(offset == +width.slice(0, width.length-2)*(slides.length - 1)){
+        if(offset == +width.slice(0, width.length-2)*(slides.length - 1)){// если слайде на последней фото
             offset = 0;
         }else{
             offset += +width.slice(0, width.length - 2);
         }
         
-        slidesField.style.transform = `translateX(-${offset}px)`;
+        slidesField.style.transform = `translateX(-${offset}px)`;//перемещение слайда
         if(slideIndex== slides.length){
             slideIndex = 1;
         }else{
             slideIndex ++;
         }
 
-        if(slides.length < 10){
-            current.textContent = `0${slideIndex}`;
-        }else{
-            current.textContent = slideIndex;
-        }
+        slideLength();
+        delOpacity();
     });
 
     prev.addEventListener('click', () => {
@@ -353,12 +370,39 @@ window.addEventListener('DOMContentLoaded', ()  => {
         }else{
             slideIndex--;
         }
-        if(slides.length < 10){
-            current.textContent = `0${slideIndex}`;
-        }else{
-            current.textContent = slideIndex;
+        slideLength();
+        delOpacity();
+    });    
+
+        
+         console.log(dots);
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                const slideTo = e.target.getAttribute('data-slide-to');
+                
+                slideIndex =slideTo;
+                offset = +width.slice(0, width.length -2)*(slideTo - 1);
+                
+                slidesField.style.transform = `translateX(-${offset}px)`;
+
+                slideLength();
+                delOpacity();
+            });
+        });
+
+        function slideLength(){
+            if(slides.length < 10){
+                current.textContent = `0${slideIndex}`;
+            }else{
+                current.textContent = slideIndex;
+            }
         }
-    });
+
+        function delOpacity(){
+            dots.forEach(dot => dot.style.opacity = '.5');// убираем выделение
+            dots[slideIndex - 1].style.opacity = 1;// ставим выделение синхронно слайду
+        }
+    
     // showSlides(slideIndex); // 5. ствим предел по фото (1/4)
     // if (slides.length < 10){
     //     total.textContent = `0${slides.length}`;
@@ -395,4 +439,5 @@ window.addEventListener('DOMContentLoaded', ()  => {
     //     plusSlides(1);
     // });
     
+  
 });
